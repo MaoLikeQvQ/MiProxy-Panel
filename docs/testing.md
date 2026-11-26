@@ -2,6 +2,14 @@
 
 记录日期：2026-11-26。以下记录本地工作区和发布前的验证范围；云端运行与正式产物以 [Actions](https://github.com/MaoLikeQvQ/MiProxy-Panel/actions) 和 [Releases](https://github.com/MaoLikeQvQ/MiProxy-Panel/releases) 的实际记录为准。
 
+## v0.1.0 发布记录
+
+- 发布代码提交：`a003cb412a9842a5d795e7c333e7dc9ef741e548`。
+- [打包预检 45770077798](https://github.com/MaoLikeQvQ/MiProxy-Panel/actions/runs/45770077798)：通过，生成产物并完成 Linux 安装验收，不公开 Release。
+- [正式发布 45770667112](https://github.com/MaoLikeQvQ/MiProxy-Panel/actions/runs/45770667112)：通过，标签 `v0.1.0`，完成前后端检查、四套 Chromium 回归、13 目标编译、原生 amd64 Ubuntu systemd 安装验收和发布。
+- [正式 Release](https://github.com/MaoLikeQvQ/MiProxy-Panel/releases/tag/v0.1.0)：已公开，19 个发布文件。从正式 Release 实际下载全部文件后，校验清单中的 18 项 SHA-256 全部一致；核对了 13 个二进制的系统、位数与字节序，以及部署包中的 4 个允许路径。
+- 下载的 Apple Silicon macOS 二进制实际执行 `--version` 返回 `MiProxy Panel v0.1.0`。发布文件仅下载与校验，没有安装到 macOS 系统目录或启动新内核。
+
 ## 已通过
 
 | 项目 | 验证方式与范围 |
@@ -36,11 +44,11 @@
 9. 通过终端卸载，移除服务与命令，保留配置。
 10. --no-start 安装后服务保持停止，随后可从终端启动。
 
-原生 ARM64 环境完整通过。amd64 systemd 在 ARM 宿主的仿真容器中未能启动，故没有将该环境记为 systemd 安装验收通过；GitHub 原生 amd64 Ubuntu runner 配置了同一验收脚本，实际结果见发布运行记录。
+原生 ARM64 环境完整通过。amd64 systemd 在 ARM 宿主的仿真容器中未能启动，故没有将该环境记为 systemd 安装验收通过；GitHub 原生 amd64 Ubuntu runner 配置了同一验收脚本，本次 v0.1.0 已通过该原生 amd64 安装验收，链接见上方发布记录。
 
 ## 尚未完成
 
-- 实际 GitHub Release 的 HTTPS 下载和后续直接安装需在发布后补验；首个版本无法覆盖真实旧版本到新版本的升级。
+- 在新设备上通过实际 GitHub Release 在线安装的完整验收：当前真实安装验收的下载层仍为 fixture；正式资源的 HTTPS 下载与 SHA-256 已单独通过。首个版本无法覆盖真实旧版本到新版本的升级。
 - OpenWrt 路由器真机、MIPS / ARM 老设备、不同发行版与固件兼容性。
 - 物理设备重启后的自动启动、透明代理和实际路由接管。
 - 用户截图中的 macOS Terminal 原生窗口显示偏移：伪终端的全屏控制与重绘测试通过，但原生窗口症状未复现。
