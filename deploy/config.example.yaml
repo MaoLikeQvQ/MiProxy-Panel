@@ -1,0 +1,22 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+external-controller: 0.0.0.0:9090
+
+dns:
+  enable: false
+  enhanced-mode: fake-ip
+  nameserver:
+    - 1.1.1.1
+
+proxy-groups:
+  - name: 默认策略
+    type: select
+    proxies:
+      - DIRECT
+      - REJECT
+
+rules:
+  - DOMAIN-SUFFIX,example.com,默认策略
+  - MATCH,DIRECT

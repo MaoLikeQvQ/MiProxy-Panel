@@ -1,0 +1,13 @@
+[Unit]
+Description=MiProxy Panel
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/miproxy-panel.env
+ExecStart=/usr/local/bin/miproxy-panel
+Restart=on-failure
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

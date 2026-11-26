@@ -1,0 +1,11 @@
+/web/node_modules/
+/web/dist/
+/bin/
+/dist-release/
+__pycache__/
+/config/
+.env
+.DS_Store
+
+# Local browser diagnostics may contain private configuration.
+/.playwright-mcp/
