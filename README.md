@@ -58,7 +58,7 @@ OpenWrt 在 root SSH 中执行相同命令，去掉 `sudo`；缺少工具时先�
 
 ~~~sh
 # 指定已发布版本
-sudo sh /tmp/miproxy-install.sh --version v0.1.0
+sudo sh /tmp/miproxy-install.sh --version v0.1.1
 # 只安装，不立即启动服务
 sudo sh /tmp/miproxy-install.sh --no-start
 # 自动检测不适用时明确指定架构

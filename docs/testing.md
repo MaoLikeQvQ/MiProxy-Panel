@@ -55,11 +55,14 @@
 
 正式发布步骤和补验方式见 [GitHub 打包与发布](releasing.md)。
 
-## v0.1.1 发布前验证
+## v0.1.1 验证与发布
 
 - 后端改为 cmd / internal，前端按 features / shared / styles 组织；Go 竞态测试、Go vet、前端类型构建与 6 项 YAML 测试通过。
 - 原四套浏览器回归通过，新增访问设置回归通过，覆盖保存、清除确认、密码校验和认证过期提示；浏览器 API 使用模拟数据。
 - 13 个目标本地交叉编译完成，18 项 SHA-256 校验通过，macOS ARM64 版本号正确。
 - 编译程序的真实 HTTP / 私有 Socket 集成测试通过：内嵌 Web、废弃密码环境变量不生效、密码摘要持久化、Basic Auth 以及本机恢复访问；真实伪终端执行 access 命令，确认隐藏输入不回显且新密码即时生效。
 - Docker Desktop 的独立 ARM64 Debian systemd 容器中执行 tests/integration/linux_install.py，完整安装、终端导入删除、服务启停、自启动切换、重复安装保留配置、卸载和 --no-start 均通过；下载层仍为 fixture。测试容器完成后删除，不更改宿主服务。
-- 体积数据见 package-size.md，截图来自独立演示数据与真实终端程序。本轮云端构建与正式资源校验完成后补充运行链接。OpenWrt 真机验收仍待完成。
+- 体积数据见 package-size.md，截图来自独立演示数据与真实终端程序。[正式发布运行 45776953463](https://github.com/MaoLikeQvQ/MiProxy-Panel/actions/runs/45776953463) 已成功，完成原生 amd64 Ubuntu 的全部检查、真实编译程序认证及 systemd 安装验收。OpenWrt 真机验收仍待完成。
+
+- v0.1.1 发布代码提交为 b63742c，标签指向该提交。[正式 Release](https://github.com/MaoLikeQvQ/MiProxy-Panel/releases/tag/v0.1.1) 已公开并设为 latest，包含 19 个文件；从 GitHub 实际下载全部文件后，校验清单中的 18 项均通过。
+- 下载的 macOS ARM64 正式二进制返回 MiProxy Panel v0.1.1；使用该程序执行 tests/integration/runtime.py，通过真实 HTTP 访问认证、私有 Socket 恢复及真实伪终端密码隐藏输入测试，未改动已安装服务或用户配置。
