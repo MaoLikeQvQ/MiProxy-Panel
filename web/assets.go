@@ -1,0 +1,12 @@
+// Package web embeds the compiled frontend for native and container builds.
+package web
+
+import (
+	"embed"
+	"io/fs"
+)
+
+//go:embed dist
+var assets embed.FS
+
+func Assets() (fs.FS, error) { return fs.Sub(assets, "dist") }

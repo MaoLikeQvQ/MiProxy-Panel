@@ -4,7 +4,23 @@
 
 项目地址：[MaoLikeQvQ/MiProxy-Panel](https://github.com/MaoLikeQvQ/MiProxy-Panel) · [下载版本](https://github.com/MaoLikeQvQ/MiProxy-Panel/releases) · [问题反馈](https://github.com/MaoLikeQvQ/MiProxy-Panel/issues)
 
-[完整使用说明](docs/usage.md) · [下载文件与适用环境](docs/downloads.md) · [v0.1.0 更新内容](docs/releases/v0.1.0.md) · [配置说明](docs/configuration.md)
+[完整使用说明](docs/usage.md) · [下载文件与适用环境](docs/downloads.md) · [v0.1.1 更新内容](docs/releases/v0.1.1.md) · [配置说明](docs/configuration.md)
+
+## 界面预览
+
+截图使用独立演示数据，不包含私人订阅或密钥。终端界面来自真实程序的伪终端输出。
+
+Web 运行概览：
+
+![Web 运行概览](docs/screenshots/web-overview.png)
+
+统一规则列表与规则集地址设置：
+
+![Web 规则设置](docs/screenshots/web-rules.png)
+
+SSH / 本机终端订阅管理：
+
+![终端订阅管理](docs/screenshots/terminal.png)
 
 ## 功能
 
@@ -78,7 +94,9 @@ sudo miproxy
 
 ## 本次版本更新
 
-首个版本 `v0.1.0` 包含 Web 与终端管理、已有内核自动检测、托管内核安装和更新、订阅导入应用、统一规则列表、远程规则集地址设置、日志及历史记录，以及 Linux / OpenWrt 安装与 GitHub 自动打包。详细行为和验证边界见[版本说明](docs/releases/v0.1.0.md)。
+v0.1.1 完成工程目录整理，拆分服务端、终端和共享模块，前端按业务功能组织；新增应用内访问设置，取消密码环境变量，并补充截图、使用与体积说明。完整变化和从 v0.1.0 升级的认证迁移步骤见[版本说明](docs/releases/v0.1.1.md)。
+
+升级前使用 PANEL_PASSWORD 的部署，请先准备本机或 SSH 访问。升级后通过「访问设置」或设备终端 miproxy-panel access 设置新密码；旧密码环境变量不再生效。内核控制密钥从扫描结果或实际 YAML 自动取得。
 
 ## 首次使用
 
@@ -187,7 +205,7 @@ sudo miproxy
 ssh -L 8787:127.0.0.1:8787 用户名@设备地址
 ~~~
 
-然后在自己电脑浏览器打开同一地址。默认回环访问无需登录。需要直接开放局域网访问时，在 `/etc/miproxy-panel.env` 配置监听地址和 `PANEL_PASSWORD`；Web Basic Auth 用户名为 `admin`。终端不受 Web 登录设置影响。完整变量见[配置说明](docs/configuration.md)。
+然后在自己电脑浏览器打开同一地址。默认回环访问无需登录。需要直接开放局域网访问时，先在 Web「访问设置」中设置密码，再配置监听地址；Web 登录用户名为 admin。也可在设备终端执行 miproxy-panel access 设置或恢复密码。终端不受 Web 登录设置影响。完整变量见[配置说明](docs/configuration.md)。
 
 Web 的基本使用流程：
 
@@ -258,13 +276,40 @@ test -e .env || cp .env.example .env
 chmod 600 .env
 ~~~
 
-在 `.env` 设置 `PANEL_PASSWORD` 和 `MIHOMO_SECRET` 后启动：
+Docker 不再要求密码环境变量。内核密钥从共享 YAML 自动读取。启动后通过容器内私有控制接口设置 Web 密码：
 
 ~~~sh
 docker compose up --build -d
+docker compose exec panel /miproxy-panel access
 ~~~
 
 默认访问 [http://127.0.0.1:8787](http://127.0.0.1:8787)，Web 用户名 `admin`。此 Compose 方式从源码构建；GitHub Release 提供原生二进制，第一版没有发布容器镜像到镜像仓库。
+
+## 项目结构与开发
+
+后端命令入口位于 cmd/miproxy-panel，服务端与终端分别位于 internal/server、internal/terminal；API 契约、配置合并、认证、文件和下载能力独立为内部模块。前端按业务功能放在 web/src/features，公共能力归 shared，测试分为 unit 与 browser。完整职责和依赖方向见[架构说明](docs/architecture.md)。
+
+~~~sh
+make build          # 构建 Web 和本机程序
+make test           # Go 竞态测试 + 前端单元测试
+make check          # 类型、Go vet、脚本语法
+make test-browser   # 对已启动的 18788 预览执行回归
+make dev            # 后端默认 8787
+~~~
+
+本次本地构建的实际体积：
+
+| 环境 | 面板二进制 |
+| --- | ---: |
+| Linux amd64 | 9.61 MiB |
+| Linux arm64 | 9.00 MiB |
+| macOS Apple Silicon | 9.16 MiB |
+| macOS Intel | 9.79 MiB |
+| 其他目标 | 8.69–10.50 MiB |
+
+全部架构及配套文件合计约 125.02 MiB，单台设备只下载一个架构。以本机现有 Mihomo v1.19.33 为例，面板与内核两个可执行文件共约 63.34 MiB，不含 Geo 数据、订阅缓存和 Sparkle 应用。
+
+体积实测与复现命令见[安装包体积](docs/package-size.md)。面板二进制包含 Web 与终端；Mihomo、Geo 数据和订阅缓存另计。v0.1.1 的升级说明见版本记录；v0.1.0 保留原有行为。
 
 ## 开发与发布
 
@@ -278,7 +323,7 @@ npm --prefix web run build
 go test -race ./...
 go vet ./...
 mkdir -p bin config
-CGO_ENABLED=0 go build -trimpath -o bin/miproxy-panel .
+CGO_ENABLED=0 go build -trimpath -o bin/miproxy-panel ./cmd/miproxy-panel
 ln -sf miproxy-panel bin/miproxy
 ~~~
 

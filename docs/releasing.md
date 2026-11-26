@@ -1,6 +1,6 @@
 # GitHub 打包与发布
 
-正式版本在 GitHub Actions 的 Ubuntu runner 上构建。工作流为 .github/workflows/release.yml，发布脚本为 deploy/build-release.sh。目标设备只下载安装产物，不编译源码。
+正式版本在 GitHub Actions 的 Ubuntu runner 上构建。工作流为 .github/workflows/release.yml，发布脚本为 scripts/release/build.sh。目标设备只下载安装产物，不编译源码。
 
 ## 预检
 
@@ -29,8 +29,8 @@ git push origin v0.1.0
 工作流顺序：
 
 1. 使用 Go 1.26 和 Node.js 24，按锁文件安装前端依赖。
-2. 构建 Web 静态资源，执行类型检查、Go 竞态测试、Go vet、YAML 测试和 ShellCheck，并在 Chromium 中执行内核管理、检测接入、订阅应用和统一规则列表四套浏览器回归。
-3. 交叉编译 13 个目标，将标签写入 main.version。
+2. 构建 Web 静态资源，执行类型检查、Go 竞态测试、Go vet、YAML 测试和 ShellCheck，并在 Chromium 中执行内核管理、检测接入、订阅应用、统一规则列表和访问设置五套浏览器回归。
+3. 交叉编译 13 个目标，将标签写入 github.com/MaoLikeQvQ/MiProxy-Panel/internal/buildinfo.Version。
 4. 在可丢弃的 Ubuntu runner 上以 root 执行真实 systemd 安装验收。测试用本次产物模拟 Release 下载，运行生产安装脚本，覆盖校验失败、默认安装、指定版本、重复安装、终端导入删除、服务启停、自启动切换、卸载及 --no-start。
 5. 保存 Actions Artifact。标签触发的运行创建草稿 Release，上传全部文件后才公开并设为 latest；任一前置检查失败不会发布。
 
@@ -75,14 +75,14 @@ npm --prefix web ci
 npm --prefix web run build
 go test -race ./...
 go vet ./...
-node --test web/test/yaml.test.mjs
-shellcheck install.sh deploy/install.sh deploy/build-release.sh
+node --test web/tests/unit/yaml.test.mjs
+shellcheck install.sh deploy/install.sh scripts/release/build.sh
 actionlint .github/workflows/release.yml
-sh deploy/build-release.sh v0.1.0 /绝对路径/空输出目录
+sh scripts/release/build.sh v0.1.0 /绝对路径/空输出目录
 ~~~
 
 安装验收脚本会更改系统服务，只能在可丢弃的 root Linux 环境运行，并拒绝覆盖已有安装：
 
 ~~~sh
-sudo env MIPROXY_TEST_ISOLATED=1 python3 deploy/test-linux.py --release-dir /绝对路径/发布产物目录
+sudo env MIPROXY_TEST_ISOLATED=1 python3 tests/integration/linux_install.py --release-dir /绝对路径/发布产物目录
 ~~~

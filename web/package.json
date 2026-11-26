@@ -1,12 +1,14 @@
 {
   "name": "miproxy-panel-web",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "typecheck": "vue-tsc --noEmit",
-    "build": "npm run typecheck && vite build"
+    "build": "npm run typecheck && vite build",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "test:browser": "node tests/browser/core-dialog.smoke.mjs && node tests/browser/discovery-ui.smoke.mjs && node tests/browser/runtime-ui.smoke.mjs && node tests/browser/unified-rules.smoke.mjs && node tests/browser/access-settings.smoke.mjs"
   },
   "dependencies": {
     "@codemirror/commands": "^6.11.1",

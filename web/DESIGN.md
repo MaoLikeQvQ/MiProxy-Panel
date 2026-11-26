@@ -4,7 +4,7 @@
 
 ## 主题与排版
 
-主题颜色集中在 `src/theme.css`。使用 `--canvas`、`--paper`、`--surface`、`--line`、`--control`、`--heading`、`--ink`、`--muted` 表达内容层级，使用 `--accent`、`--success`、`--draft`、`--error` 表达操作及状态。禁止页面硬编码主题颜色。
+主题颜色集中在 `src/styles/theme.css`。使用 `--canvas`、`--paper`、`--surface`、`--line`、`--control`、`--heading`、`--ink`、`--muted` 表达内容层级，使用 `--accent`、`--success`、`--draft`、`--error` 表达操作及状态。禁止页面硬编码主题颜色。
 
 中文与英文使用系统无衬线字体，代码、IP、时间和规则表达式使用 `--mono`。正文与常规控件 14px，辅助信息 12px，区块标题 16px，页面标题 20px。数字使用等宽数字特性。
 
@@ -25,3 +25,12 @@
 ## 验收入口
 
 `#components` 为组件样板页，展示输入、选择、按钮、标签、主题、弹窗、焦点及加载反馈。验证页面时同时检查浅色、暗色、桌面、手机、长名称、空数据和错误状态。
+
+## 前端目录与职责
+
+- `src/app/App.vue` 负责导航、共享配置草稿和应用结果协调；页面功能放在 `features/`。
+- `features/core`、`overview`、`groups`、`rules`、`subscriptions`、`logs`、`configuration`、`settings` 各自维护页面及专属交互。
+- `features/rules/RuleEditor.vue` 拥有规则表单状态与弹窗，`ruleForm.ts` 验证输入，应用层负责持久化及内核重载。
+- `shared/` 只放跨功能复用的请求、格式化、主题和基础组件；功能专属类型和逻辑留在功能目录。
+- `styles/` 保存主题变量及共享布局，单页专有样式尽量留在对应组件。
+- `tests/unit` 验证配置转换；`tests/browser` 通过正常页面入口验证交互，API 使用测试数据。

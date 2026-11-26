@@ -1,7 +1,7 @@
 services:
   mihomo:
     image: ${MIHOMO_IMAGE:-metacubex/mihomo:v1.19.34}
-    command: ["-d", "/config", "-f", "/config/config.yaml", "-secret", "${MIHOMO_SECRET:?set MIHOMO_SECRET in .env}"]
+    command: ["-d", "/config", "-f", "/config/config.yaml"]
     volumes:
       - type: bind
         source: ${CONFIG_DIR:-./config}
@@ -21,10 +21,8 @@ services:
     depends_on: [mihomo]
     environment:
       PANEL_LISTEN: 0.0.0.0:8787
-      PANEL_PASSWORD: ${PANEL_PASSWORD:?set PANEL_PASSWORD in .env}
       PANEL_CONFIG: /config/config.yaml
       MIHOMO_CONTROLLER: http://mihomo:9090
-      MIHOMO_SECRET: ${MIHOMO_SECRET:?set MIHOMO_SECRET in .env}
     ports:
       - "${PANEL_HOST:-127.0.0.1}:${PANEL_PORT:-8787}:8787"
     volumes:

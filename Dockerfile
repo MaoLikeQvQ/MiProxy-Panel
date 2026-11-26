@@ -15,9 +15,13 @@ FROM --platform=$BUILDPLATFORM ${GO_IMAGE} AS build
 ARG TARGETOS
 ARG TARGETARCH
 WORKDIR /src
-COPY go.mod go.sum *.go ./
+COPY go.mod go.sum ./
+RUN go mod download
+COPY cmd ./cmd
+COPY internal ./internal
+COPY web/assets.go ./web/assets.go
 COPY --from=web /src/web/dist ./web/dist
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w" -o /out/miproxy-panel .
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w" -o /out/miproxy-panel ./cmd/miproxy-panel
 
 FROM scratch
 COPY --from=mihomo /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt

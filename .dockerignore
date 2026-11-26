@@ -4,3 +4,8 @@ config
 bin
 web/node_modules
 web/dist
+
+dist-release
+.playwright-mcp
+artifacts
+docs/screenshots

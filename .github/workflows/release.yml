@@ -6,7 +6,7 @@ on:
       version:
         description: '预检版本（只构建和验收，不发布 Release）'
         required: true
-        default: v0.1.0
+        default: v0.1.1
   push:
     tags:
       - 'v*'
@@ -49,11 +49,11 @@ jobs:
         run: |
           go test -race ./...
           go vet ./...
-          node --test web/test/yaml.test.mjs
+          node --test web/tests/unit/yaml.test.mjs
           sh -n install.sh
           sh -n deploy/install.sh
-          sh -n deploy/build-release.sh
-          shellcheck install.sh deploy/install.sh deploy/build-release.sh
+          sh -n scripts/release/build.sh
+          shellcheck install.sh deploy/install.sh scripts/release/build.sh
       - name: Validate Web browser flows
         env:
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/miproxy-browser/node_modules/playwright/index.mjs
@@ -69,14 +69,17 @@ jobs:
             if curl --silent --fail http://127.0.0.1:18788/ >/dev/null; then break; fi
             sleep 1
           done
-          node web/test/core-dialog.smoke.mjs
-          node web/test/discovery-ui.smoke.mjs
-          node web/test/runtime-ui.smoke.mjs
-          node web/test/unified-rules.smoke.mjs
+          node web/tests/browser/core-dialog.smoke.mjs
+          node web/tests/browser/discovery-ui.smoke.mjs
+          node web/tests/browser/runtime-ui.smoke.mjs
+          node web/tests/browser/unified-rules.smoke.mjs
+          node web/tests/browser/access-settings.smoke.mjs
       - name: Build release binaries and checksums
-        run: sh deploy/build-release.sh "$RELEASE_VERSION" dist-release
+        run: sh scripts/release/build.sh "$RELEASE_VERSION" dist-release
+      - name: Validate compiled runtime and access settings
+        run: python3 tests/integration/runtime.py --binary dist-release/miproxy-panel_linux_amd64
       - name: Validate Linux direct installation and systemd lifecycle
-        run: sudo env MIPROXY_TEST_ISOLATED=1 python3 deploy/test-linux.py --release-dir dist-release
+        run: sudo env MIPROXY_TEST_ISOLATED=1 python3 tests/integration/linux_install.py --release-dir dist-release
       - uses: actions/upload-artifact@v7
         with:
           name: miproxy-panel-${{ env.RELEASE_VERSION }}

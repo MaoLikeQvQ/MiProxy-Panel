@@ -9,3 +9,5 @@ __pycache__/
 
 # Local browser diagnostics may contain private configuration.
 /.playwright-mcp/
+
+/artifacts/

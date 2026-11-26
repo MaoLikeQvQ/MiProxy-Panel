@@ -1,6 +1,6 @@
 # MiProxy Panel 使用说明
 
-适用于 `v0.1.0`。程序同时提供 Web 面板与 SSH 终端界面。下载文件选择见同版本 `downloads.md`，在线文档位于 [MiProxy-Panel](https://github.com/MaoLikeQvQ/MiProxy-Panel)。
+适用于 v0.1.1，包含工程目录整理与应用内认证。程序同时提供 Web 面板与 SSH 终端界面。下载文件选择见同版本 `downloads.md`，在线文档位于 [MiProxy-Panel](https://github.com/MaoLikeQvQ/MiProxy-Panel)。
 
 ## 1. 安装与打开
 
@@ -22,7 +22,7 @@ Web 默认位于设备的 `http://127.0.0.1:8787`。从自己电脑访问远程�
 ssh -L 8787:127.0.0.1:8787 用户名@设备地址
 ~~~
 
-然后在电脑浏览器打开 `http://127.0.0.1:8787`。需要局域网直接访问时，在设备 `/etc/miproxy-panel.env` 设置 `PANEL_LISTEN=0.0.0.0:8787` 和 `PANEL_PASSWORD` 后重启服务，Web 登录用户名为 `admin`。终端通过本机 Unix Socket 连接，不使用 Web 密码。
+然后在电脑浏览器打开 `http://127.0.0.1:8787`。需要局域网直接访问时，在设备 `/etc/miproxy-panel.env` 设置 `PANEL_LISTEN=0.0.0.0:8787` 前先在 Web「访问设置」保存密码，修改监听地址后重启服务，Web 登录用户名为 `admin`。终端通过本机 Unix Socket 连接，不使用 Web 密码。
 
 ### macOS
 
@@ -134,3 +134,11 @@ YAML 编辑器可查看完整草稿，`Ctrl` / `⌘` + `F` 搜索，`Ctrl` / `�
 4. 添加一个测试域名规则，再添加一个测试规则集地址，确认策略与顺序正确；删除并撤销一次。
 5. 重新打开规则页和日志页，确认内容与内核一致；测试一次错误地址或断开内核时的提示。
 6. 仅在可丢弃设备上验证服务启停、重启、更新与卸载。OpenWrt 真机和代理接管需要单独验收。
+
+## 10. 访问设置与恢复
+
+Web「访问设置」可设置或更改密码，用户名为 admin。浏览器再次要求认证时使用新密码。清除密码后恢复仅本机访问，远程连接将被拒绝。
+
+忘记密码、容器首次访问或无法进入 Web 时，在本机交互终端执行 miproxy-panel access；系统服务安装使用 sudo miproxy-panel access，Docker 使用 docker compose exec panel /miproxy-panel access。该命令通过私有 Unix Socket 修改设置，输入隐藏，服务必须正在运行。
+
+不再使用 PANEL_PASSWORD / MIHOMO_SECRET。内核通过扫描接入并读取认证信息，面板内核从 YAML 自动读取 secret。旧安装升级后先设置应用内密码。

@@ -120,8 +120,6 @@ PANEL_CONFIG=/etc/mihomo/config.yaml
 MIHOMO_BINARY=$core_binary
 MIHOMO_HOME=/etc/mihomo
 MIHOMO_CONTROLLER=http://127.0.0.1:9090
-MIHOMO_SECRET=
-PANEL_PASSWORD=
 EOF
     chmod 600 "$env_temp"
     mv "$env_temp" "$install_root/etc/miproxy-panel.env"

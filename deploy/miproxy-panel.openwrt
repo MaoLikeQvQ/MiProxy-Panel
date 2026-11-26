@@ -13,10 +13,10 @@ start_service() {
     procd_open_instance
     procd_set_param command /usr/bin/miproxy-panel
     procd_set_param env "PANEL_LISTEN=${PANEL_LISTEN:-127.0.0.1:8787}" \
-        "PANEL_PASSWORD=$PANEL_PASSWORD" "PANEL_CONFIG=$PANEL_CONFIG" \
+        "PANEL_CONFIG=$PANEL_CONFIG" \
         "PANEL_SOCKET=$PANEL_SOCKET" "PANEL_EXTERNAL_CONFIG=$PANEL_EXTERNAL_CONFIG" \
         "MIHOMO_BINARY=${MIHOMO_BINARY:-/usr/bin/mihomo}" "MIHOMO_HOME=$MIHOMO_HOME" \
-        "MIHOMO_CONTROLLER=$MIHOMO_CONTROLLER" "MIHOMO_SECRET=$MIHOMO_SECRET" \
+        "MIHOMO_CONTROLLER=$MIHOMO_CONTROLLER" \
         "MIHOMO_CONFIG_PATH=$MIHOMO_CONFIG_PATH" "MIHOMO_RELOAD_PAYLOAD=$MIHOMO_RELOAD_PAYLOAD"
     procd_set_param respawn
     procd_set_param stdout 1
